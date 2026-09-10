@@ -1,0 +1,9 @@
+data/
+data/**
+node_modules/
+client/node_modules/
+server/node_modules/
+.git/
+.agents/
+*.log
+docs/

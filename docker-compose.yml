@@ -1,0 +1,34 @@
+name: "pve-os-builder-puq"
+
+services:
+  pve-os-builder:
+    container_name: pve-os-builder
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: puqcloud/pve-os-builder:latest
+    restart: unless-stopped
+    # Host networking mode: binds port 8080 (Web UI) and 2049 (NFS) directly to host network.
+    # Note: in 'network_mode: host', docker ps / docker compose ps does not show ports in the PORTS column.
+    network_mode: host
+    privileged: true
+    environment:
+      - TZ=America/Winnipeg
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+      - JWT_SECRET=puq-pve-builder-super-secret-key-change-me
+      - PORT=8080
+      - LIBGUESTFS_BACKEND=direct
+      # Optional host IP override (auto-detected automatically via host networking)
+      # - HOST_IP=${HOST_IP:-}
+    volumes:
+      # Database storage
+      - ./data/db:/data/db
+      # Upstream base images cache
+      - ./data/downloads:/data/downloads
+      # OS profiles & group configuration presets
+      - ./data/configs:/data/configs
+      # Finished Proxmox .vma.zst template repository
+      - ./data/repository:/data/repository
+      # KVM hardware virtualization device (auto-enabled via ./docker-restart.sh when running on host with /dev/kvm)
+      # - /dev/kvm:/dev/kvm
