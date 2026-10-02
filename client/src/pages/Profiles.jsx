@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   Activity,
   RefreshCw,
+  Disc,
 } from 'lucide-react';
 
 export default function Profiles() {
@@ -66,6 +67,8 @@ export default function Profiles() {
     qemu_net_queues: 0,
     qemu_firewall: true,
     qemu_watchdog: false,
+    qemu_cdrom: 'none',
+    disk_format: 'raw',
 
     // Category 2: Cloud-Init & Access Management Directives
     cloud_init_user: 'root',
@@ -159,6 +162,8 @@ export default function Profiles() {
       qemu_net_queues: profile.qemu_net_queues || 0,
       qemu_firewall: profile.qemu_firewall !== undefined ? !!profile.qemu_firewall : true,
       qemu_watchdog: !!profile.qemu_watchdog,
+      qemu_cdrom: profile.qemu_cdrom || 'none',
+      disk_format: profile.disk_format || 'raw',
 
       // Category 2
       cloud_init_user: profile.cloud_init_user || 'root',
@@ -312,9 +317,14 @@ export default function Profiles() {
                     <span className="badge badge-os" title="VNC Console compatibility">
                       <Monitor size={11} /> noVNC ({profile.qemu_vga || 'std'})
                     </span>
-                    <span className="badge badge-os">
-                      <HardDrive size={11} /> {profile.target_disk_size_gb || 5}GB
+                    <span className="badge badge-os" title="Primary Disk Format">
+                      <HardDrive size={11} /> {profile.target_disk_size_gb || 5}GB ({(profile.disk_format || 'raw').toUpperCase()})
                     </span>
+                    {profile.qemu_cdrom && profile.qemu_cdrom !== 'none' && (
+                      <span className="badge badge-info" title="CD-ROM Drive Attached">
+                        <Disc size={11} /> CD-ROM ({profile.qemu_cdrom})
+                      </span>
+                    )}
 
                     {/* Advanced Opt-in indicators */}
                     {profile.sysctl_tcp_bbr === 1 && (
@@ -809,6 +819,42 @@ export default function Profiles() {
                     <option value="writeback">writeback (High performance for local NVMe)</option>
                     <option value="writethrough">writethrough (Conservative)</option>
                   </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Primary Disk Format</label>
+                  <select
+                    className="form-control"
+                    value={formData.disk_format}
+                    onChange={(e) => setFormData({ ...formData, disk_format: e.target.value })}
+                  >
+                    <option value="raw">RAW (.raw - LVM / ZFS / Ceph Block Storage - Default)</option>
+                    <option value="qcow2">QCOW2 (.qcow2 - QEMU Copy-On-Write / NFS & Directory Storage)</option>
+                    <option value="vmdk">VMDK (.vmdk - VMware Compatible Virtual Disk)</option>
+                  </select>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Target disk format. Converted via qemu-img and packaged directly into the Proxmox VMA archive.
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">CD-ROM Drive (media=cdrom)</label>
+                  <select
+                    className="form-control"
+                    value={formData.qemu_cdrom}
+                    onChange={(e) => setFormData({ ...formData, qemu_cdrom: e.target.value })}
+                  >
+                    <option value="none">Disabled (No CD-ROM Drive)</option>
+                    <option value="ide2">IDE 2 (ide2: none,media=cdrom - Proxmox Default)</option>
+                    <option value="ide0">IDE 0 (ide0: none,media=cdrom)</option>
+                    <option value="sata1">SATA 1 (sata1: none,media=cdrom - Recommended for Q35)</option>
+                    <option value="scsi1">SCSI 1 (scsi1: none,media=cdrom)</option>
+                  </select>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Attaches an empty CD-ROM drive for mounting ISOs. If IDE 2 is selected, Cloud-Init automatically shifts to IDE 0.
+                  </div>
                 </div>
               </div>
 

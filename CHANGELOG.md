@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-10-02
+
+### Added
+- **Configurable Primary Disk Format**:
+  - Added support for target disk image formats (`raw`, `qcow2`, `vmdk`) in OS Build Profiles under "1. QEMU Hardware".
+  - Automated disk conversion via `qemu-img convert` to the selected format prior to Proxmox VMA packaging.
+  - Dynamic Proxmox VMA dump map generation (`#qmdump#map:scsi0:drive-scsi0:<storage>:<format>:`) and storage volume definition (`local-lvm` for raw, `local` for qcow2/vmdk).
+  - Primary disk format badge displayed in OS Build Profiles cards and embedded in Proxmox `.notes` metadata.
+- **Configurable CD-ROM Drive Support**:
+  - Added option to attach an empty CD-ROM drive (`media=cdrom`) to template configurations in OS Build Profiles.
+  - Supported slot configurations: `Disabled` (default), `IDE 2` (`ide2: none,media=cdrom`), `IDE 0` (`ide0: none,media=cdrom`), `SATA 1` (`sata1: none,media=cdrom`), and `SCSI 1` (`scsi1: none,media=cdrom`).
+  - Automatic Cloud-Init slot collision prevention: when `IDE 2` is assigned to CD-ROM, the Cloud-Init drive dynamically shifts to `IDE 0`.
+  - CD-ROM drive status indicator badge in OS Build Profiles cards and companion `.notes` metadata.
+
+### Fixed
+- **QEMU File Write Lock Collision during QCOW2 Conversion**:
+  - Resolved `qemu-img: Failed to get "write" lock` error when converting disks whose source and destination file paths match (`disk.qcow2 -> disk.qcow2`).
+  - Implemented safe temporary file staging and atomic replacement during conversion.
+
 ## [1.0.0] - 2026-09-09
 
 ### Added

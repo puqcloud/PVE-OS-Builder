@@ -60,7 +60,7 @@ export default function About() {
                 PUQ PVE OS Builder
               </h1>
               <span className="badge badge-cyan" style={{ fontSize: '11px', padding: '3px 8px' }}>
-                Docker Edition v1.0.0
+                Docker Edition v1.1.0
               </span>
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px', maxWidth: '620px', lineHeight: 1.6 }}>

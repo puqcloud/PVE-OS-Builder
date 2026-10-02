@@ -63,6 +63,8 @@ export function initDatabase() {
       qemu_firewall INTEGER DEFAULT 1,
       qemu_vga TEXT DEFAULT 'std',
       qemu_watchdog INTEGER DEFAULT 0,
+      qemu_cdrom TEXT DEFAULT 'none',
+      disk_format TEXT DEFAULT 'raw',
       cloud_init_user TEXT DEFAULT 'root',
       provider_ssh_key TEXT DEFAULT '',
       optimize_cloud_init_sources INTEGER DEFAULT 1,
@@ -186,7 +188,9 @@ function migrateProfilesSchema(database) {
     { name: 'disable_ipv6', type: 'INTEGER', default: '0' },
     { name: 'auto_security_updates', type: 'INTEGER', default: '0' },
     { name: 'enable_fail2ban', type: 'INTEGER', default: '0' },
-    { name: 'ssh_custom_port', type: 'INTEGER', default: '22' }
+    { name: 'ssh_custom_port', type: 'INTEGER', default: '22' },
+    { name: 'qemu_cdrom', type: 'TEXT', default: "'none'" },
+    { name: 'disk_format', type: 'TEXT', default: "'raw'" }
   ];
 
   try {

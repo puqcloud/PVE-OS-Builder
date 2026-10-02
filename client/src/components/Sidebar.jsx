@@ -113,7 +113,7 @@ export default function Sidebar({ currentPage, setCurrentPage }) {
           <Info size={14} style={{ color: 'var(--accent-cyan)' }} />
           <span style={{ fontWeight: 500 }}>Docker Edition</span>
         </div>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>v1.0.0</span>
+        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>v1.1.0</span>
       </button>
     </aside>
   );

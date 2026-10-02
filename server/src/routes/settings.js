@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
   res.json({
     app: {
       name: 'pve-os-builder-docker',
-      version: '1.0.0',
+      version: '1.1.0',
       port: PORT,
     },
     auth: {

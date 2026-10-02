@@ -45,6 +45,11 @@ router.post('/', (req, res) => {
     queues = cores;
   }
 
+  const validDiskFormats = ['raw', 'qcow2', 'vmdk'];
+  const diskFormat = validDiskFormats.includes(p.disk_format) ? p.disk_format : 'raw';
+  const validCdroms = ['none', 'ide2', 'ide0', 'sata1', 'scsi1'];
+  const qemuCdrom = validCdroms.includes(p.qemu_cdrom) ? p.qemu_cdrom : 'none';
+
   try {
     const insert = db.prepare(`
       INSERT INTO profiles (
@@ -54,6 +59,7 @@ router.post('/', (req, res) => {
         qemu_cores, qemu_memory, qemu_net_model, qemu_scsihw,
         qemu_cpu_type, qemu_bios, qemu_machine, qemu_async_io, qemu_disk_cache,
         qemu_discard, qemu_ssd, qemu_net_queues, qemu_firewall, qemu_vga, qemu_watchdog,
+        qemu_cdrom, disk_format,
         cloud_init_user, provider_ssh_key, optimize_cloud_init_sources, force_ssh_regen,
         disable_password_expiry, sysctl_tcp_bbr, sysctl_file_limits, sysctl_swappiness,
         sysctl_syn_flood, disable_ipv6, auto_security_updates, enable_fail2ban,
@@ -65,6 +71,7 @@ router.post('/', (req, res) => {
         @qemu_cores, @qemu_memory, @qemu_net_model, @qemu_scsihw,
         @qemu_cpu_type, @qemu_bios, @qemu_machine, @qemu_async_io, @qemu_disk_cache,
         @qemu_discard, @qemu_ssd, @qemu_net_queues, @qemu_firewall, @qemu_vga, @qemu_watchdog,
+        @qemu_cdrom, @disk_format,
         @cloud_init_user, @provider_ssh_key, @optimize_cloud_init_sources, @force_ssh_regen,
         @disable_password_expiry, @sysctl_tcp_bbr, @sysctl_file_limits, @sysctl_swappiness,
         @sysctl_syn_flood, @disable_ipv6, @auto_security_updates, @enable_fail2ban,
@@ -100,6 +107,8 @@ router.post('/', (req, res) => {
       qemu_firewall: p.qemu_firewall !== undefined ? (p.qemu_firewall ? 1 : 0) : 1,
       qemu_vga: p.qemu_vga || 'std',
       qemu_watchdog: p.qemu_watchdog ? 1 : 0,
+      qemu_cdrom: qemuCdrom,
+      disk_format: diskFormat,
       cloud_init_user: p.cloud_init_user || 'root',
       provider_ssh_key: sshKey,
       optimize_cloud_init_sources: p.optimize_cloud_init_sources !== undefined ? (p.optimize_cloud_init_sources ? 1 : 0) : 1,
@@ -144,6 +153,11 @@ router.put('/:id', (req, res) => {
     queues = cores;
   }
 
+  const validDiskFormats = ['raw', 'qcow2', 'vmdk'];
+  const diskFormat = validDiskFormats.includes(p.disk_format) ? p.disk_format : 'raw';
+  const validCdroms = ['none', 'ide2', 'ide0', 'sata1', 'scsi1'];
+  const qemuCdrom = validCdroms.includes(p.qemu_cdrom) ? p.qemu_cdrom : 'none';
+
   try {
     db.prepare(`
       UPDATE profiles SET
@@ -176,6 +190,8 @@ router.put('/:id', (req, res) => {
         qemu_firewall = @qemu_firewall,
         qemu_vga = @qemu_vga,
         qemu_watchdog = @qemu_watchdog,
+        qemu_cdrom = @qemu_cdrom,
+        disk_format = @disk_format,
         cloud_init_user = @cloud_init_user,
         provider_ssh_key = @provider_ssh_key,
         optimize_cloud_init_sources = @optimize_cloud_init_sources,
@@ -222,6 +238,8 @@ router.put('/:id', (req, res) => {
       qemu_firewall: p.qemu_firewall !== undefined ? (p.qemu_firewall ? 1 : 0) : 1,
       qemu_vga: p.qemu_vga || 'std',
       qemu_watchdog: p.qemu_watchdog ? 1 : 0,
+      qemu_cdrom: qemuCdrom,
+      disk_format: diskFormat,
       cloud_init_user: p.cloud_init_user || 'root',
       provider_ssh_key: sshKey,
       optimize_cloud_init_sources: p.optimize_cloud_init_sources !== undefined ? (p.optimize_cloud_init_sources ? 1 : 0) : 1,
